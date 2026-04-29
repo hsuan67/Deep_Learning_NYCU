@@ -29,5 +29,5 @@
 
 💡實驗發現:
 - Depthwise Convolution: 透過將 Group 數設為 Input Channel 數，強制模型在該層不進行 Channel 間的交互運算，大幅度精簡了參數量並減少運算負擔，這在處理資源受限的電波資料時非常有效
-- Batch Normalization: 透過對梯度進行 Normalization，有效控制了權重更新的尺度，防止梯度爆炸或消失，是讓深層模型（如 DeepConvNet）能順利訓練的功臣
+- Batch Normalization: 透過對梯度進行 Normalization，有效控制了權重更新的尺度，防止梯度爆炸或消失
 - Activation function: 實測發現 Leaky ReLU / ELU 確實解決了 Dying ReLU 的問題。透過在負半區保留微小梯度，避免了神經元死掉後無法更新權重的窘境
