@@ -10,22 +10,22 @@
 綜上所述，資料其實是總共有 1080 筆的電波圖，每個電波圖都有兩個 channel 並時間長 750，最後再擴增出一維輔助計算
 
 🛠️核心技術:
-1. EEGNet: 核心特色是使用 Depthwise Separable Convolution。先提取時間特徵，再提取空間（通道間）特徵，最後混合資訊，這能大幅減少參數量
-  1) 時間特徵提取 (Temporal Convolution)
+- EEGNet: 核心特色是使用 Depthwise Separable Convolution。先提取時間特徵，再提取空間（通道間）特徵，最後混合資訊，這能大幅減少參數量
+  1. 時間特徵提取 (Temporal Convolution)
      - 腦電波訊號是非常快速的序列變化。這個步驟就像是在聽一段音樂，長條卷積核 (kernel size 為 (1, 51)) 負責掃描「一段時間」內的波形變化，提取出低階的時間特徵
-  2) 空間特徵提取 (Depthwise Convolution)
+  2. 空間特徵提取 (Depthwise Convolution)
     - 分組運算: groups = 16，這 16 個輸入通道（從上一步產生的）分別獨立進行卷積，沒有 Channel 間的交互資訊，節省運算量
     - 空間混合: 模型會去比較「頭部不同位置」的電極訊號差異（例如左腦與右腦的信號對比）
     - why?
        - 減少參數量: 如果用一般的卷積（全部通道一起算），參數量會爆炸。分組計算可以讓模型在不犧牲性能的前提下，大幅精簡大小
        - 提取空間模式: 腦電波在不同大腦區域的分布具有特定意義，這一步專門負責捕捉「空間位置」的資訊
-  3) 特徵混合與分類 (Separable Convolution)
+  3. 特徵混合與分類 (Separable Convolution)
      - 使用 1 x 15 的卷積核進行 Pointwise Convolution
      - 整合前面提取到的時間與空間資訊 。將不同通道間的資訊重新混合，找出最終能代表這筆 EEG 資料的特徵點，最後再透過 Flatten 轉成一維向量進行分類
 
-2. 訓練時需先將 model.train() 開啟（以確保 Dropout 與 BatchNorm 正常運作），並在每一筆 batch 運算前將梯度清零（optimizer.zero_grad()）
-3. 測試時呼叫 model.eval() 關閉 Dropout，並使用 torch.no_grad() 確保不計算梯度，節省記憶體
-4. Optimizer & Scheduler: 使用 AdamW 優化器與 CosineAnnealingWarmRestarts 調度器。後者會讓學習率隨 epoch 呈週期性變動，有助於跳出局部優化點
+- 訓練時需先將 model.train() 開啟（以確保 Dropout 與 BatchNorm 正常運作），並在每一筆 batch 運算前將梯度清零（optimizer.zero_grad()）
+- 測試時呼叫 model.eval() 關閉 Dropout，並使用 torch.no_grad() 確保不計算梯度，節省記憶體
+- Optimizer & Scheduler: 使用 AdamW 優化器與 CosineAnnealingWarmRestarts 調度器。後者會讓學習率隨 epoch 呈週期性變動，有助於跳出局部優化點
 
 💡實驗發現:
 - Depthwise Convolution: 透過將 Group 數設為 Input Channel 數，強制模型在該層不進行 Channel 間的交互運算，大幅度精簡了參數量並減少運算負擔，這在處理資源受限的電波資料時非常有效
