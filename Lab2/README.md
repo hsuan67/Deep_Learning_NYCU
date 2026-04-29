@@ -29,5 +29,8 @@
 
 💡實驗發現:
 - Depthwise Convolution: 透過將 Group 數設為 Input Channel 數，強制模型在該層不進行 Channel 間的交互運算，大幅度精簡了參數量並減少運算負擔，這在處理資源受限的電波資料時非常有效
-- Batch Normalization: 透過對梯度進行 Normalization，有效控制了權重更新的尺度，防止梯度爆炸或消失
+- Batch Normalization: 對每個 mini batch 做標準化，大的變小、小的變大， 讓它們平均一點， 防止梯度消失或梯度爆炸（每一層的輸出都有 B atchNorm ，確保輸入數據在每一層都保持適當的尺度，可以加快收斂速度）
+- Dropout: 防止過度依賴某個 neuron ，減少 overfitting 的風險（在每個迭代以一定的機率丟棄 hidden layer 的神經元，而被丟棄的神經元不會傳遞訊息。在反向傳播時，被丟棄的神經元梯度是 0，這樣模型在訓練時就不會過度依賴某個神經元）
 - Activation function: 實測發現 Leaky ReLU / ELU 確實解決了 Dying ReLU 的問題。透過在負半區保留微小梯度，避免了神經元死掉後無法更新權重的窘境
+- Batch 的目的是想算出一部分資料的 loss 和 gradient 就去更新模型參數，不用每次都拿全部資料來計算
+- 當 batch size 很小時 ，模型看了一點資料就更新一次，可能造成學習的方向變化很大不好收斂；當 batch size 調大時，模型的更新方向會更接近資料的全域情形。模型會一次看過更多的資料再去計算梯度決定更新方向。因此模型的學習效果通常會更好
