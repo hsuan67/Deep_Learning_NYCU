@@ -17,5 +17,5 @@
 
 📊實驗發現:
 - 學習率影響: 較高的學習率能加速收斂，但過高可能導致 Loss 震盪或不收斂
-- 非線性必要性: 對於 XOR 類型的非線性問題，移除 activation function 會導致模型無法有效學習分類邊界，Loss 遠高於具activation function的版本
+- 非線性必要性: 對於 XOR 類型的非線性問題，移除 activation function 會導致模型無法有效學習分類邊界，Loss 遠高於具 activation function 的版本
 - 模型容量: 增加隱藏層單元數量能提升模型對複雜模式的擬合能力，但需注意 Overfitting 的風險 
