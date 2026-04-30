@@ -8,10 +8,10 @@
 
 🛠️核心技術:
 - 殘差區塊 (Residual Block):
-  a. BasicBlock (用於 ResNet18)
+  - BasicBlock (用於 ResNet18)
     - 由兩個 3 x 3 的卷積層組成
     - 結構簡單直觀，適合層數較淺的網路
-  b. Bottleneck (用於 ResNet50 / 152)
+  - Bottleneck (用於 ResNet50 / 152)
     - 採用 1 x 1 → 3 x 3 → 1 x 1 的三層組合
     - 設計動機:
       1. 降維: 第一個 1 x 1 卷積負責減少通道數（壓縮資訊），降低後續 3 x 3 卷積的計算負擔
