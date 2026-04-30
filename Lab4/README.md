@@ -11,25 +11,21 @@
 - 維度處理: 為了配合 frame-by-frame 處理，訓練時會將 Tensor 維度從 (B, seq, C, H, W) 重排為 (seq, B, C, H, W)
 
 🛠️核心技術:
-1. 訓練流程與影像生成
-  模型透過 Feature Extraction 提取首幀特徵作為參考 ，隨後每一幀依序透過以下流程:
+1. 訓練流程與影像生成:  模型透過 Feature Extraction 提取首幀特徵作為參考 ，隨後每一幀依序透過以下流程:
   - Posterior Prediction: 將預測的人體特徵與 Label 特徵傳入 Gaussian Predictor 得到潛在變數 z 的均值與方差
   - Decoder Fusion：融合人體特徵、姿勢特徵與隨機採樣的 z
   - Generator：根據融合後的參數生成下一幀影像
 
-2. 重參數化技巧 (Reparameterization Trick)
-  為了解決隨機採樣無法反向傳播的問題，我們將隨機性轉移到雜訊 ϵ 上
+2. 重參數化技巧 (Reparameterization Trick):  為了解決隨機採樣無法反向傳播的問題，我們將隨機性轉移到雜訊 ϵ 上
   - 計算標準差
   - 生成隨機雜訊
   - 計算潛在變數
 
-3. Teacher Forcing 策略
-  為了防止模型在訓練初期「一步錯、步步錯」
+3. Teacher Forcing 策略:  為了防止模型在訓練初期「一步錯、步步錯」
   - 機制: 模型決定使用 Ground Truth 的特徵或是上一步預測的輸出作為當前輸入
   - 更新策略: 初始 Ratio 為 1.0，從第 10 個 Epoch 開始遞減，引導模型逐漸學會獨立預測
 
-4. KL Annealing
-  為了平衡 Reconstruction Loss (MSE) 與 KL Divergence，實作了兩種權重更新策略:
+4. KL Annealing:  為了平衡 Reconstruction Loss (MSE) 與 KL Divergence，實作了兩種權重更新策略:
   - Monotonic: 權重 β 每步增加 0.1 直到 1.0，過程較穩定 
   - Cyclical: 權重在週期內線性變化，有助於模型交替專注於數據重建與潛在空間探索
 
